@@ -20,7 +20,8 @@ import Home from "@/assets/home-02.svg"
 import { useCallback, } from "react"
 import {  LucideLogOut, LucidePlus, Trash2 } from "lucide-react"
 import Cookies from "js-cookie"
-import ProfileImage from "./ProfileImage"
+import dynamic from "next/dynamic";
+const ProfileImage  = dynamic(()=>import("./ProfileImage"),{ssr:false})
 import History from "./History"
 import { useRouter } from "next/navigation"
 

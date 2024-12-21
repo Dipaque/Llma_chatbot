@@ -8,7 +8,8 @@ import { copyText, speakText } from '@/lib/utils';
 import  { StateContext } from './ContextProvider';
 import { useContext } from "react"
 import Cookies from 'js-cookie';
-import ProfileImage from './ProfileImage';
+import dynamic from "next/dynamic";
+const ProfileImage  = dynamic(()=>import("./ProfileImage"),{ssr:false})
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useParams } from 'next/navigation';

@@ -1,6 +1,8 @@
+"use client";
 import React from 'react'
 import Cookies from 'js-cookie'
-import ProfileImage from './ProfileImage'
+import dynamic from "next/dynamic";
+const ProfileImage  = dynamic(()=>import("./ProfileImage"),{ssr:false})
 import { SidebarTrigger } from './ui/sidebar'
 
 const Header = () => {
