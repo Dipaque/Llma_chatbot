@@ -17,7 +17,7 @@ const page = () => {
         toast({
           description: "The password reset email has been sent to your mail box",
         })
-        router.push("/")
+        router.push("/login")
       }).catch((err)=> console.log(err))
     }else{
       toast({

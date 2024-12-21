@@ -3,9 +3,9 @@ import Image from "next/image";
 import LoginImage from "@/assets/login_image.png"
 import Google from "@/assets/Google.png"
 import { Button } from "@/components/ui/button";
-import signInWithGoogle from "./actions/auth";
 import Cookies from "js-cookie"
 import { useRouter } from "next/navigation";
+import signInWithGoogle from "./actions/auth";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/firebaseConfig";
 import { useRef } from "react";
@@ -72,7 +72,7 @@ export default function Home() {
        <p className="mx-auto mt-3  text-sm"> Don't have an account?<Link href={"/signup"} className="text-blue-1"> Sign up</Link> </p>
         </div>
       </div>
-      <div className="col-span-1 flex items-center justify-end p-5 pe-6">
+      <div className="col-span-1 lg:flex items-center justify-end p-5 pe-6 hidden">
         <Image src={LoginImage} className="rounded-2xl" height={500} width={500} alt="login image" />
       </div>
     </div>

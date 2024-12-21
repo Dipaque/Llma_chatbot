@@ -33,7 +33,7 @@ export function AppSidebar() {
     Cookies.remove("email")
     Cookies.remove("photoURL")
     Cookies.remove("uid")
-    router.push("/")
+    router.push("/login")
   }, [])
 
   const handleNewChat = async()=>{
