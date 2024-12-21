@@ -1,17 +1,19 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Cookies from "js-cookie";
+import useCookieValue from "./useCookieValue";
 
 const ProfileImage = () => {
   const [isClient, setIsClient] = useState(false);
-  const [photoURL, setPhotoURL] = useState<string | null>(null);
-  const [userName, setUserName] = useState<string | null>(null);
+ 
+
+  const photoURL = useCookieValue("photoURL","");
+  const userName = useCookieValue("userName","");
 
   useEffect(() => {
     // Mark that we are running in the client
     setIsClient(true);
-    setPhotoURL(Cookies.get("photoURL"));
-    setUserName(Cookies.get("userName"));
+  
   }, []);
 
   if (!isClient) {
@@ -25,7 +27,7 @@ const ProfileImage = () => {
         <img alt="Profile" height={45} width={45} src={photoURL} />
       ) : (
         <div className="flex items-center justify-center bg-blue-2 text-blue-1">
-          {userName?.charAt(0).toUpperCase()}
+          {userName ? userName?.charAt(0).toUpperCase():""}
         </div>
       )}
     </div>

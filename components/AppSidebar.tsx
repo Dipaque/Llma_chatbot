@@ -17,17 +17,20 @@ import {
 import Image from "next/image"
 import Logo from "@/assets/Logomark@2x.png"
 import Home from "@/assets/home-02.svg"
-import { useCallback, } from "react"
+import { useCallback, useEffect, useState, } from "react"
 import {  LucideLogOut, LucidePlus, Trash2 } from "lucide-react"
 import Cookies from "js-cookie"
 import dynamic from "next/dynamic";
 const ProfileImage  = dynamic(()=>import("./ProfileImage"),{ssr:false})
 import History from "./History"
 import { useRouter } from "next/navigation"
+import useCookieValue from "./useCookieValue";
 
 export function AppSidebar() {
 
   const router = useRouter();
+  const userName = useCookieValue("userName","");
+
   
   const handleLogout = useCallback(() => {
     Cookies.remove("userName")
@@ -74,7 +77,7 @@ export function AppSidebar() {
         <div className="chat-image avatar">
         <ProfileImage />
         </div>
-        <span className="font-semibold">{Cookies.get("userName")}</span>
+        <span className="font-semibold">{userName}</span>
           </PopoverTrigger>
           <PopoverContent className="flex flex-row items-center justify-start gap-2 p-3 border-t px-4 w-64 rounded-lg " onClick={handleLogout}>
             <LucideLogOut size={18} className="text-gray-500" />

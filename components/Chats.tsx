@@ -37,42 +37,13 @@ const Chats = () => {
     }
   },[isUpdated])
   
-  // const handleDelete = useCallback(async(index:number)=>{
-  //    // Remove the chat at the specified index
-  // const filteredChats = chats.filter((chat,i)=>i!==index);
-
-
-  // // Create a new URLSearchParams object
-  // const searchParams = new URLSearchParams({
-  //   id: params.id,
-  //   chats: JSON.stringify(filteredChats),
-  // });
-
-  // // Create a new URL with the encoded query string
-  // const url = `/api/addChat?${searchParams.toString()}`;
-
-  // await fetch(url, {
-  //   method: 'DELETE',
-  // })
-  //   .then((res) => {
-  //     if (res.ok) {
-  //       console.log('Chat deleted successfully');
-  //     } else {
-  //       throw new Error(`Error: ${res.status}`);
-  //     }
-  //   })
-  //   .catch((err) => {
-  //     console.error('Error deleting chat:', err);
-  //   });
-  //   handleIsUpdated()
-  // },[chats])
 
 
 
   return (
     <div className='flex-grow-0 overflow-x-hidden  overflow-y-scroll  mt-5 lg:w-3/5   lg:mx-auto '>
          {
-      chats.length>0? chats.map((chat:any,index)=>(
+      chats?.length>0? chats.map((chat:any,index)=>(
        <React.Fragment key={index} >
         <div className='chat chat-end w-auto' >
         <div className="chat-image avatar hidden md:block">
