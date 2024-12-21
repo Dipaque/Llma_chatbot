@@ -41,7 +41,7 @@ const Chats = () => {
 
 
   return (
-    <div className='flex-grow-0 overflow-x-hidden  overflow-y-scroll  mt-5 lg:w-3/5   lg:mx-auto '>
+    <div className='flex-grow-0 overflow-x-hidden remove-scrollbar overflow-y-scroll  mt-5 lg:w-3/5   lg:mx-auto '>
          {
       chats?.length>0? chats.map((chat:any,index)=>(
        <React.Fragment key={index} >

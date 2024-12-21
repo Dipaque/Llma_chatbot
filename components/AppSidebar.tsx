@@ -51,7 +51,7 @@ export function AppSidebar() {
   }
 
   return (
-    <Sidebar>
+    <Sidebar className="remove-scrollbar">
       <SidebarHeader className="flex flex-row items-center justify-start   border-b px-4" >
         <Image src={Logo} height={45} width={45} alt="logo" />
         <b className="text-[#000000] font-extrabold">Chitti 2.0</b>

@@ -47,7 +47,7 @@ const History = () => {
 
 
   return (
-    <div className=' '>
+    <div className='r '>
         <header className=" mt-5 ps-3 mb-5 font-bold  ">
           Recent
         </header>
