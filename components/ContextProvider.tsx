@@ -6,6 +6,8 @@ export const StateContext = createContext({});
 const ContextProvider = ({ children }:any) => {
   const [isUpdated, setIsUpdated] = useState(false); // Manage theme state
   const [containsChatTitle,setContainsTitle] = useState(false);
+  const [chats,setChats] = useState<any[]>([]);
+  const [isLoading,setIsLoading] = useState(true)
 
   
   const handleIsUpdated = () => {
@@ -19,7 +21,7 @@ const ContextProvider = ({ children }:any) => {
     });
   };
   return (
-    <StateContext.Provider value={{ isUpdated, handleIsUpdated, containsChatTitle,handleChatTitle }}>
+    <StateContext.Provider value={{ isUpdated, handleIsUpdated, containsChatTitle,handleChatTitle,chats,setChats,isLoading,setIsLoading }}>
       {children}
     </StateContext.Provider>
   );

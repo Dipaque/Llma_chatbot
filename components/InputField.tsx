@@ -9,7 +9,7 @@ import { useParams } from 'next/navigation';
 
 const InputField = () => {
   const [prompt, setPrompt] = useState("");
-  const {handleIsUpdated,containsChatTitle}:any = useContext(StateContext);
+  const {handleIsUpdated,containsChatTitle,chats,isLoading,setIsLoading}:any = useContext(StateContext);
   const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY, dangerouslyAllowBrowser: true });
   async function getGroqChatCompletion(prompt: string) {
     return groq.chat.completions.create({
@@ -19,7 +19,7 @@ const InputField = () => {
           content: prompt,
         },
       ],
-      model: "llama-3.3-70b-versatile",
+      model: "llama3-8b-8192",
 
     });
   }
@@ -28,8 +28,16 @@ const params = useParams();
 
   async function send(e:React.FormEvent) {
     e.preventDefault();
-    if(prompt.length>0){
-      const chatCompletion = await getGroqChatCompletion(prompt);
+    const conversationHistory = chats.length > 2 
+  ? chats.slice(-2) // Correctly extract the last two elements
+  : chats; // Use the entire array if it has 2 or fewer elements
+
+const alteredPrompt = `You are a helpful assistant. Here is the conversation history:
+${conversationHistory.map((chat:any) => `Query: ${chat.query}\nResponse: ${chat.response}`).join('\n')}
+And the new query is: ${prompt}.`;
+
+if (prompt.length > 0) {
+  const chatCompletion = await getGroqChatCompletion(alteredPrompt);
       if(!containsChatTitle){
        const titleResponse = await getGroqChatCompletion("Generate a one line title within 3 to 5 words for this prompt: "+prompt);
       const title = titleResponse.choices[0]?.message.content
@@ -50,6 +58,7 @@ const params = useParams();
         })
       }
       setPrompt("");
+      setIsLoading(true)
       handleIsUpdated()
     } 
   }
@@ -73,7 +82,7 @@ const params = useParams();
         <textarea onKeyDown={handleKeyDown}   className='ms-3 focus:border-0 outline-none bg-white w-full h-8 ' value={prompt} onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPrompt(e.target.value)} placeholder=' Describe your prompt... ' />
       </span>
 
-      <Button size={"icon"} type='submit' color='#4F46E5' className='rounded-full bg-[#4F46E5] float-end h-10 w-10' onClick={(e) => send(e)}>
+      <Button size={"icon"} type='submit' disabled={isLoading} color='#4F46E5' className='rounded-full bg-[#4F46E5] float-end h-10 w-10' onClick={(e) => send(e)}>
         <SendHorizonal />
       </Button>
     </form>

@@ -29,6 +29,8 @@ export const speakText = (text:string) => {
   speechSynthesis.speak(utterance);
 }
 
+
+
 export const copyText = (text:string) => {
   window.navigator.clipboard.writeText(text);
 }

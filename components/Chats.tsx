@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Markdown from 'react-markdown'
 import cpu from "@/assets/Cpu.svg"
 import Image from 'next/image';
-import { Copy,AudioLines, Trash2 } from 'lucide-react';
+import { Copy,AudioLines, Trash2, LucideCheckCircle } from 'lucide-react';
 import { copyText, speakText } from '@/lib/utils';
 import  { StateContext } from './ContextProvider';
 import { useContext } from "react"
@@ -14,12 +14,14 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { dracula } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { useParams } from 'next/navigation';
 import PopConfirm from './PopConfirm';
+import ChatSkeleton from './ChatSkeleton';
+import { useToast } from "@/hooks/use-toast"
+
 
 const Chats = () => {
 
-  const {isUpdated,handleIsUpdated,handleChatTitle}:any = useContext(StateContext);
-  const photoURL = Cookies.get("photoURL")
-  const [chats,setChats] = useState<any[]>([]);
+  const {isUpdated,handleIsUpdated,handleChatTitle,chats,setChats,isLoading,setIsLoading}:any = useContext(StateContext);
+  const { toast } = useToast()
   const params = useParams();
   useEffect(()=>{
     const fethChats = async() => {
@@ -29,6 +31,7 @@ const Chats = () => {
       })
       res.json().then((data)=>{setChats(data.data)
         if(data.title!=="New Chat" && data.title!=="") handleChatTitle();
+        setIsLoading(false)
       }).catch(err=>console.log(err))
     }
     fethChats();
@@ -43,6 +46,9 @@ const Chats = () => {
   return (
     <div className='flex-grow-0 overflow-x-hidden remove-scrollbar overflow-y-scroll  mt-5 lg:w-3/5   lg:mx-auto '>
          {
+          isLoading
+          ? <ChatSkeleton />
+          :
       chats?.length>0? chats.map((chat:any,index)=>(
        <React.Fragment key={index} >
         <div className='chat chat-end w-auto' >
@@ -58,10 +64,12 @@ const Chats = () => {
   </div>
   <div className='chat-footer flex flex-row gap-3 items-center justify-start mt-3 '>
     <AudioLines onClick={()=>speakText(chat.query)} size={16} className='text-black-1 cursor-pointer' />
-    <Copy onClick={()=>copyText(chat.query)} size={16} className='text-black-1 cursor-pointer' />
-      {/* <PopConfirm onOk={()=>handleDelete(index)}>
-        <Trash2 size={16}  className='text-black-1 cursor-pointer' />
-      </PopConfirm> */}
+    <Copy onClick={()=>{
+      copyText(chat.query)
+      toast({
+        description: "The content copied!",
+      })}} size={16} className='text-black-1 cursor-pointer' />
+    
   </div> 
 
       </div>
@@ -101,10 +109,12 @@ const Chats = () => {
   </div>
   <div className='chat-footer flex flex-row gap-3 items-center justify-start mt-3 '>
     <AudioLines onClick={()=>speakText(chat.response)} size={16} className='text-black-1 cursor-pointer' />
-    <Copy onClick={()=>copyText(chat.response)} size={16} className='text-black-1 cursor-pointer' />
-    {/* <PopConfirm onOk={()=>handleDelete(index)}>
-        <Trash2 size={16}  className='text-black-1 cursor-pointer' />
-    </PopConfirm> */}
+    <Copy onClick={()=>{
+      copyText(chat.query)
+      toast({
+        description:<span className='flex items-center gap-2'><LucideCheckCircle color='green' /> The content copied!</span> ,
+      })}} size={16} className='text-black-1 cursor-pointer' />
+    
   </div>
             
           </div>
@@ -115,6 +125,7 @@ const Chats = () => {
         How can I help you today?
         </p>
     }
+   
     </div>
   )
 }
