@@ -32,7 +32,7 @@ const params = useParams();
   ? chats.slice(-4) // Correctly extract the last two elements
   : chats; // Use the entire array if it has 2 or fewer elements
 
-const alteredPrompt = `You are a helpful assistant. Here is the conversation history:
+const alteredPrompt = `Your name is Chitti  a helpful assistant. Here is the conversation history:
 ${conversationHistory.map((chat:any) => `Query: ${chat.query}\nResponse: ${chat.response}`).join('\n')}
 And the new query is: ${prompt}.`;
 
