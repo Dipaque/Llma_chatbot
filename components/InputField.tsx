@@ -28,8 +28,8 @@ const params = useParams();
 
   async function send(e:React.FormEvent) {
     e.preventDefault();
-    const conversationHistory = chats.length > 2 
-  ? chats.slice(-2) // Correctly extract the last two elements
+    const conversationHistory = chats.length > 4 
+  ? chats.slice(-4) // Correctly extract the last two elements
   : chats; // Use the entire array if it has 2 or fewer elements
 
 const alteredPrompt = `You are a helpful assistant. Here is the conversation history:
