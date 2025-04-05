@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Groq from "groq-sdk";
 import { SendHorizonal, Paperclip } from 'lucide-react';
 import { Button } from './ui/button';
@@ -9,11 +9,16 @@ import { useParams } from 'next/navigation';
 
 const InputField = () => {
   const [prompt, setPrompt] = useState("");
-  const {handleIsUpdated,containsChatTitle,chats,isLoading,setIsLoading}:any = useContext(StateContext);
+  const {handleIsUpdated,containsChatTitle,chats,isLoading,setIsLoading,generate,setGenerate}:any = useContext(StateContext);
   const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY, dangerouslyAllowBrowser: true });
-  async function getGroqChatCompletion(prompt: string) {
+  async function getGroqChatCompletion(prompt: string,contextChunks?:{query:string,response:string,timestamp:any}[]) {
+    console.log(contextChunks)
     return groq.chat.completions.create({
       messages: [
+        {
+          role: "system",
+          content:`You're a helpful assistant named Chitti 2.0, powered by the llama3-8b-8192 model.${ contextChunks && `Use the following context to answer the user's question accurately:\n\n ${contextChunks.map((chat)=>`Query:${chat.query}\n Response:${chat.response}`).join('\n')}`}`
+        },
         {
           role: "user",
           content: prompt,
@@ -37,16 +42,40 @@ ${conversationHistory.map((chat:any) => `Query: ${chat.query}\nResponse: ${chat.
 And the new query is: ${prompt}.`;
 
 if (prompt.length > 0) {
-  const chatCompletion = await getGroqChatCompletion(alteredPrompt);
+  const res = await fetch(`/api/qdrant?query=${prompt}`,{
+    method:"GET",
+  })
+  const contextChunks = await res.json()
+  let chatCompletion
+  let vectorId = ""
+  if(!contextChunks.status) {
+    chatCompletion = await getGroqChatCompletion(alteredPrompt,conversationHistory);
+    const res = await fetch("/api/qdrant",{
+      method:"PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body:JSON.stringify( {
+        query:prompt,
+        response:chatCompletion.choices[0]?.message.content
+      })
+    })
+    const response = await res.json()
+    vectorId = response.data
+    console.log(vectorId)
+  }else{
+    chatCompletion = await getGroqChatCompletion(alteredPrompt,contextChunks.data);
+  }
+   
       if(!containsChatTitle){
        const titleResponse = await getGroqChatCompletion("Generate a one line title within 3 to 5 words for this prompt: "+prompt);
       const title = titleResponse.choices[0]?.message.content
-       const response = await fetch("/api/addChat",{
+       const response = await fetch(`/api/addChat`,{
           method:"PUT",
           headers: {
             "Content-Type": "application/json",
           },
-          body:JSON.stringify({id:params.id, message:{query: prompt ,response: chatCompletion.choices[0]?.message.content,timestamp:new Date().toISOString()},title})
+          body:JSON.stringify({id:params.id, message:{query: prompt ,response: chatCompletion.choices[0]?.message.content,timestamp:new Date().toISOString(),vectorId:vectorId},title,})
         })
       }else{
         const response = await fetch("/api/addChat",{
@@ -54,7 +83,7 @@ if (prompt.length > 0) {
           headers: {
             "Content-Type": "application/json",
           },
-          body:JSON.stringify({id:params.id, message:{query: prompt ,response: chatCompletion.choices[0]?.message.content,timestamp:new Date().toISOString()}})
+          body:JSON.stringify({id:params.id, message:{query: prompt ,response: chatCompletion.choices[0]?.message.content,timestamp:new Date().toISOString(),vectorId:vectorId},})
         })
       }
       setPrompt("");
@@ -62,6 +91,16 @@ if (prompt.length > 0) {
       handleIsUpdated()
     } 
   }
+
+  useEffect(()=>{
+    const triggerSend = async () => {
+      if(!generate) return
+      await send(new Event("submit") as React.FormEvent); // simulate form event
+      setGenerate(false); // reset trigger
+    };
+    triggerSend();
+  },[generate])
+
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
       if (event.shiftKey) {

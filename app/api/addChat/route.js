@@ -11,7 +11,7 @@ export async function POST(req) {
       email:body.email,
       title:"New Chat",
       messages:[],
-      timestamp:new Date().toISOString()
+      timestamp:new Date().toISOString(),
     });
 
     return NextResponse.json({ success: true, id: docRef.id });
@@ -31,7 +31,7 @@ export async function PUT(req) {
     if(body.title){
       const docRef = await updateDoc(doc(db, "Chats",body.id), {
         messages:arrayUnion(body.message),
-        title:body.title
+        title:body.title,
       });
       
     return NextResponse.json({ success: true,  });

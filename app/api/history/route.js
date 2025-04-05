@@ -20,7 +20,6 @@ export async function GET(req) {
       const historyQuery = query(
         collRef,
         where("email", "==", email),
-        limit(10)
       );
       const querySnapshot = await getDocs(historyQuery);  
       const todayHistory = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));

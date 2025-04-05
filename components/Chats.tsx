@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react'
 import Markdown from 'react-markdown'
 import cpu from "@/assets/Cpu.svg"
 import Image from 'next/image';
-import { Copy,AudioLines, Trash2, LucideCheckCircle } from 'lucide-react';
+import { Copy,AudioLines, Trash2, LucideCheckCircle, ThumbsUp, ThumbsDown } from 'lucide-react';
 import { copyText, speakText } from '@/lib/utils';
 import  { StateContext } from './ContextProvider';
 import { useContext } from "react"
@@ -16,6 +16,7 @@ import { useParams } from 'next/navigation';
 import PopConfirm from './PopConfirm';
 import ChatSkeleton from './ChatSkeleton';
 import { useToast } from "@/hooks/use-toast"
+import Feedback from './Feedback';
 
 
 const Chats = () => {
@@ -67,9 +68,9 @@ const Chats = () => {
     <Copy onClick={()=>{
       copyText(chat.query)
       toast({
-        description: "The content copied!",
+        title: "Copied!",
+        description: "The content copied to the clipboard!",
       })}} size={16} className='text-black-1 cursor-pointer' />
-    
   </div> 
 
       </div>
@@ -114,7 +115,8 @@ const Chats = () => {
       toast({
         description:<span className='flex items-center gap-2'><LucideCheckCircle color='green' /> The content copied!</span> ,
       })}} size={16} className='text-black-1 cursor-pointer' />
-    
+     <ThumbsUp size={16} className='text-black-1 cursor-pointer' />
+     <Feedback docId={params.id} chat={chat} chats={chats} index={index} />
   </div>
             
           </div>

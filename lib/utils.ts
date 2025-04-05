@@ -34,3 +34,42 @@ export const speakText = (text:string) => {
 export const copyText = (text:string) => {
   window.navigator.clipboard.writeText(text);
 }
+
+
+
+
+const apiKey = process.env.MISTRAL_EMBEDDING_KEY
+
+
+export const generateEmbedding = async (text: string): Promise<number[]> => {
+  const input = {
+    model: "mistral-embed",
+    input: [text],
+  };
+
+  try {
+    const response = await fetch("https://api.mistral.ai/v1/embeddings", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`, // Ensure apiKey is correctly set
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(input),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    if (!data || !data.data || !data.data[0]?.embedding) {
+      throw new Error("Invalid response structure");
+    }
+
+    return data.data[0].embedding; // Ensure it returns the correct format
+  } catch (error) {
+    console.error("Error generating embedding:", error);
+    throw error; // Rethrow error for better debugging
+  }
+};
