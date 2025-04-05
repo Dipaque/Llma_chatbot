@@ -111,11 +111,10 @@ const Chats = () => {
   <div className='chat-footer flex flex-row gap-3 items-center justify-start mt-3 '>
     <AudioLines onClick={()=>speakText(chat.response)} size={16} className='text-black-1 cursor-pointer' />
     <Copy onClick={()=>{
-      copyText(chat.query)
+      copyText(chat.response)
       toast({
         description:<span className='flex items-center gap-2'><LucideCheckCircle color='green' /> The content copied!</span> ,
       })}} size={16} className='text-black-1 cursor-pointer' />
-     <ThumbsUp size={16} className='text-black-1 cursor-pointer' />
      <Feedback docId={params.id} chat={chat} chats={chats} index={index} />
   </div>
             
