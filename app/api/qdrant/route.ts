@@ -32,19 +32,18 @@ export async function GET(req) {
       .join("\n\n");
       return NextResponse.json({ success: true,data:contextChunks }, { status: 200 });
     } catch (error:any) {
+      console.log("error",error)
         return NextResponse.json({ success: false, error: error.message }, { status: 500 });
     }
 }
 export async function PUT(req) {
     try {
         const body = await req.json();
-        console.log(body)
         const vector = await generateEmbedding(body.query)
         if(body.vectorId){
           await client.delete("chitti_knowledge_base", {
             points: [body.vectorId],
           });
-          console.log("inside")
           const response = await client.upsert("chitti_knowledge_base", {
             points: [
                 {

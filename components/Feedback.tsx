@@ -27,7 +27,6 @@ const FormSchema = z.object({
       })
   })
 const Feedback = ({docId,chat,chats,index}:{docId:string,chat:chat,chats:chat[],index:number}) => {
-    console.log(chat)
     const form = useForm<z.infer<typeof FormSchema>>({
         resolver: zodResolver(FormSchema),
       })
