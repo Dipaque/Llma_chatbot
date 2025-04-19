@@ -18,14 +18,14 @@ const InputField = () => {
       messages: [
         {
           role: "system",
-          content: `You're a helpful assistant named Chitti 2.0, powered by the llama3-8b-8192 model.${contextChunks && `Use the following context to answer the user's question accurately:\n\n ${contextChunks}`}`
+          content: `You're a helpful assistant named Chitti 2.0, powered by the lllama-3.3-70b-versatile model.${contextChunks && `Use the following context to answer the user's question accurately:\n\n ${contextChunks}`}`
         },
         {
           role: "user",
           content: prompt,
         },
       ],
-      model: "llama3-8b-8192",
+      model: "llama-3.3-70b-versatile",
 
     });
   }
@@ -80,9 +80,17 @@ And the new query is: ${prompt}.`;
           },
           body: JSON.stringify({ id: params.id, message: { query: prompt, response: chatCompletion.choices[0]?.message.content, timestamp: new Date().toISOString(), vectorId: vectorId }, title, })
         })
-        response.status === 200 && setChats([...chats, { query: prompt, response: chatCompletion.choices[0]?.message.content, timestamp: new Date().toISOString(), vectorId: vectorId }])
-        setStartTyping(true);
-        setAnimatedIndex((chats.length+1)-1); // Animate last message
+        const newMessage = {
+          query: prompt,
+          response: chatCompletion.choices[0]?.message.content,
+          timestamp: new Date().toISOString(),
+          vectorId: vectorId
+        };
+        
+        const updatedChats = [...chats, newMessage];
+        response.status === 200 && setChats(updatedChats);
+        //  setChats([...chats, { query: prompt, response: chatCompletion.choices[0]?.message.content, timestamp: new Date().toISOString(), vectorId: vectorId }])
+      setAnimatedIndex(updatedChats.length-1);
       } else {
         const response = await fetch("/api/addChat", {
           method: "PUT",
@@ -91,13 +99,21 @@ And the new query is: ${prompt}.`;
           },
           body: JSON.stringify({ id: params.id, message: { query: prompt, response: chatCompletion.choices[0]?.message.content, timestamp: new Date().toISOString(), vectorId: vectorId }, })
         })
-        response.status === 200 && setChats([...chats, { query: prompt, response: chatCompletion.choices[0]?.message.content, timestamp: new Date().toISOString(), vectorId: vectorId }])
-        setStartTyping(true);
-        setAnimatedIndex((chats.length + 1)-1); // Animate last message
-
+        const newMessage = {
+          query: prompt,
+          response: chatCompletion.choices[0]?.message.content,
+          timestamp: new Date().toISOString(),
+          vectorId: vectorId
+        };
+        
+        const updatedChats = [...chats, newMessage];
+        response.status === 200 && setChats(updatedChats);
+        //  setChats([...chats, { query: prompt, response: chatCompletion.choices[0]?.message.content, timestamp: new Date().toISOString(), vectorId: vectorId }])
+      setAnimatedIndex(updatedChats.length-1);
       }
       setPrompt("");
       setIsLoading(false)
+      setStartTyping(true);
     }
   }
 

@@ -1,9 +1,9 @@
 "use client";
-import React, { useEffect, useState, useContext } from "react";
+import React, { useEffect, useState, useContext, useRef } from "react";
 import Markdown from "react-markdown";
 import cpu from "@/assets/Cpu.svg";
 import Image from "next/image";
-import { Copy, AudioLines, LucideCheckCircle } from "lucide-react";
+import { Copy, AudioLines, LucideCheckCircle, ChevronDown } from "lucide-react";
 import { copyText, speakText } from "@/lib/utils";
 import { StateContext } from "./ContextProvider";
 import Cookies from "js-cookie";
@@ -31,7 +31,29 @@ const Chats = () => {
   }: any = useContext(StateContext);
   const { toast } = useToast();
   const params = useParams();
-  const [typedMessage, setTypedMessage] = useState<string>("");
+  const [showArrow, setShowArrow] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const el = scrollRef.current;
+      if (!el) return;
+  
+      const atBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 1;
+      setShowArrow(!atBottom);
+    };
+  
+    const el = scrollRef.current;
+    if (el) {
+      el.addEventListener('scroll', handleScroll);
+      handleScroll(); // Initial check
+    }
+  
+    return () => {
+      if (el) el.removeEventListener('scroll', handleScroll);
+    };
+  }, [chats]);
+  
   // Fetch chats
   useEffect(() => {
     const fethChats = async () => {
@@ -55,32 +77,32 @@ const Chats = () => {
   }, []);
 
   // Typing animation for latest message
-  useEffect(() => {
-    if (animatedIndex === null || !chats[animatedIndex]) return;
+  // useEffect(() => {
+  //   if (animatedIndex === null || !chats[chats.length - 1]) return;
 
-    const fullMessage = chats[animatedIndex].response;
-    let index = 0;
+  //   const fullMessage = chats[chats.length - 1].response;
+  //   let index = 0;
    
-    const interval = startTyping && setInterval(() => {
-      setTypedMessage((prev) => prev + fullMessage.charAt(index));
-      index++;
-      if (index >= fullMessage.length){
-        clearInterval(interval);
-        setStartTyping(false);
-      } 
-    }, 40); // Typing speed
+  //   const interval = startTyping && setInterval(() => {
+  //     setTypedMessage((prev) => prev + fullMessage.charAt(index));
+  //     index++;
+  //     if (index >= fullMessage.length){
+  //       clearInterval(interval);
+  //       setStartTyping(false);
+    //       setAnimatedIndex(null);
+  //     } 
+  //   }, 1); // Typing speed
 
-    return () => {
-      clearInterval(interval);
-      setStartTyping(false);
-     }
-  }, [animatedIndex, chats,startTyping]);
+  //   return () => {
+  //     clearInterval(interval);
+  //     setStartTyping(false);
+  //    }
+  // }, [animatedIndex, chats,startTyping]);
 
   return (
-    <div className="flex-grow-0 overflow-x-hidden remove-scrollbar overflow-y-scroll mt-5 lg:w-3/5 lg:mx-auto">
+    <div  ref={scrollRef} className="flex-grow-0 overflow-x-hidden remove-scrollbar overflow-y-scroll mt-5 lg:w-3/5 lg:mx-auto">
       {chats?.length > 0 ? (
         chats.map((chat: any, index: number) => {
-          const isAnimating = index === animatedIndex;
 
           return (
             <React.Fragment key={index}>
@@ -144,7 +166,7 @@ const Chats = () => {
                       },
                     }}
                   >
-                    {isAnimating ? typedMessage  : chat.response}
+                    {chat.response}
                   </Markdown>
                 </div>
 
@@ -185,6 +207,21 @@ const Chats = () => {
           How can I help you today?
         </p>
       )}
+     {showArrow && (
+  <div
+    onClick={() =>
+      scrollRef.current?.scrollTo({
+        top: scrollRef.current.scrollHeight,
+        behavior: 'smooth',
+      })
+    }
+    className="fixed bottom-36 left-1/2 transform -translate-x-1/2 text-3xl bg-slate-500 opacity-75 rounded-full text-white  z-50 cursor-pointer"
+  >
+    <ChevronDown />
+  </div>
+)}
+
+
     </div>
   );
 };
