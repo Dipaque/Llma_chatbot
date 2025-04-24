@@ -19,15 +19,9 @@ import Feedback from "./Feedback";
 
 const Chats = () => {
   const {
-    isUpdated,
-    handleIsUpdated,
     handleChatTitle,
     chats,
     setChats,
-    startTyping,
-    setStartTyping,
-    animatedIndex, 
-    setAnimatedIndex,
   }: any = useContext(StateContext);
   const { toast } = useToast();
   const params = useParams();
@@ -203,11 +197,11 @@ const Chats = () => {
           );
         })
       ) : (
-        <p className="text-4xl font-bold text-center text-black-1">
+        <p className="text-4xl font-bold text-center text-black-1 h-36">
           How can I help you today?
         </p>
       )}
-     {showArrow && (
+     {showArrow && chats.length > 0 && (
   <div
     onClick={() =>
       scrollRef.current?.scrollTo({

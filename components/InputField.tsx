@@ -7,22 +7,35 @@ import { Button } from './ui/button';
 import { StateContext } from './ContextProvider';
 import { useContext } from "react"
 import { useParams } from 'next/navigation';
+// import { tavily }  from '@tavily/core';
 
 const InputField = () => {
   const [prompt, setPrompt] = useState("");
   const { handleIsUpdated, containsChatTitle, chats, isLoading, setIsLoading, generate, setGenerate, setChats, setStartTyping,animatedIndex, setAnimatedIndex }: any = useContext(StateContext);
   const groq = new Groq({ apiKey: process.env.NEXT_PUBLIC_GROQ_API_KEY, dangerouslyAllowBrowser: true });
-  async function getGroqChatCompletion(prompt: string, contextChunks?: string) {
-    console.log("contextChunks", contextChunks)
+  // const client = tavily({ apiKey: process.env.NEXT_PUBLIC_TAVILY_API_KEY });
+  async function getGroqChatCompletion(alteredPrompt: string, contextChunks?: string) {
+    const options = {
+      method: 'POST',
+      headers: {Authorization: 'Bearer '+process.env.NEXT_PUBLIC_TAVILY_API_KEY, 'Content-Type': 'application/json'},
+      body: `{"query":"${prompt}","topic":"general","search_depth":"basic","chunks_per_source":3,"max_results":3,"time_range":null,"days":7,"include_answer":true,"include_raw_content":false,"include_images":false,"include_image_descriptions":false,"include_domains":[],"exclude_domains":[]}`
+    };
+    // Searching on web 
+   const searchResults = await fetch('https://api.tavily.com/search', options)
+      .then(response => response.json())
+      .then(response =>{ return response})
+      .catch(err => console.error(err));
+    const results:{title:string,url:string,content:string}[] = searchResults.results.map((result:{title:string,url:string,content:string})=>`${result.title}\n\n${result.url}\n\n${result.content}`).join('\n\n')
+    console.log(searchResults,results)
     return groq.chat.completions.create({
       messages: [
         {
           role: "system",
-          content: `You're a helpful assistant named Chitti 2.0, powered by the lllama-3.3-70b-versatile model.${contextChunks && `Use the following context to answer the user's question accurately:\n\n ${contextChunks}`}`
+          content: `You're a helpful assistant named Chitti 2.0, powered by the lllama-3.3-70b-versatile model.${contextChunks && `Use the following context to answer the user's question accurately:\n\n ${contextChunks}`} And also use this following web search results returned by tavily to answer the user's question accurately:\n\n ${results} \n\n ${searchResults.answer}`,
         },
         {
           role: "user",
-          content: prompt,
+          content: alteredPrompt,
         },
       ],
       model: "llama-3.3-70b-versatile",
