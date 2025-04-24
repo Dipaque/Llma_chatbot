@@ -8,6 +8,10 @@ Features
 
 Advanced NLP: Powered by the Llama 3.3 model for context-aware and precise responses.
 
+RAG: Implemented RAG to generate precise response
+
+Web search: Implemented web search to provide real time data
+
 Real-time Chat: Instantaneous interactions with the chatbot.
 
 Firebase Integration: Utilized for authentication, database storage, and hosting.
